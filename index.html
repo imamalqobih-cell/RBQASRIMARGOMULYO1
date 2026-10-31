@@ -1,0 +1,1462 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>RBQ ASRI MARGOMULYO - Manajemen & Monitoring Santri</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Plus Jakarta Sans', sans-serif; -webkit-tap-highlight-color: transparent; }
+        @media (max-width: 640px) {
+            .mobile-stack { flex-direction: column; align-items: stretch; }
+        }
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+    </style>
+</head>
+<body class="bg-slate-100 text-slate-800 antialiased min-h-screen flex flex-col justify-between pb-16 sm:pb-0">
+
+    <!-- HEADER UTAMA -->
+    <header id="app-header" class="bg-emerald-900 text-white shadow-md sticky top-0 z-40">
+        <div class="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-3 flex items-center justify-between">
+            <div class="flex items-center space-x-3">
+                <div id="header-logo-container" class="w-11 h-11 sm:w-12 sm:h-12 bg-white/10 border-2 border-amber-400 rounded-full flex items-center justify-center overflow-hidden shadow-md flex-shrink-0 text-amber-300 text-xl sm:text-2xl">
+                    <i class="fa-solid fa-mosque"></i>
+                </div>
+                <div>
+                    <h1 id="header-tpq-name" class="font-extrabold text-sm sm:text-lg text-amber-300 leading-tight truncate max-w-[200px] sm:max-w-xs">RBQ ASRI MARGOMULYO</h1>
+                    <p id="header-tpq-address" class="text-[10px] sm:text-xs text-emerald-100 truncate max-w-[200px] sm:max-w-xs">Margomulyo, Tegineneng, Pesawaran</p>
+                </div>
+            </div>
+            <div id="header-user-info" class="hidden flex items-center space-x-2">
+                <span id="header-welcome-text" class="text-xs text-emerald-100 font-medium hidden md:inline"></span>
+                <span id="cloud-status" class="text-[10px] bg-emerald-700/80 text-emerald-100 px-2 py-0.5 rounded-full flex items-center space-x-1" title="Status Sinkronisasi Cloud">
+                    <i class="fa-solid fa-cloud text-amber-300"></i>
+                    <span class="hidden sm:inline">Online Sync</span>
+                </span>
+                <button onclick="handleLogout()" class="bg-rose-600 hover:bg-rose-700 text-white px-2.5 py-1.5 rounded-lg text-xs font-semibold shadow transition flex items-center space-x-1">
+                    <i class="fa-solid fa-right-from-bracket"></i>
+                    <span class="hidden sm:inline">Keluar</span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- KONTEN UTAMA -->
+    <main class="flex-grow max-w-7xl w-full mx-auto px-3 sm:px-6 lg:px-8 py-4 sm:py-6">
+
+        <!-- VIEW: LOGIN PAGE -->
+        <section id="view-login" class="max-w-md mx-auto py-4 sm:py-8">
+            <div class="bg-white rounded-3xl shadow-lg border border-emerald-100 p-6 sm:p-8 space-y-5">
+                <div class="text-center space-y-2">
+                    <div class="w-20 h-20 bg-emerald-100 text-emerald-800 border-2 border-emerald-600 rounded-full flex items-center justify-center mx-auto shadow-md text-4xl">
+                        <i class="fa-solid fa-mosque"></i>
+                    </div>
+                    <h2 class="text-xl sm:text-2xl font-extrabold text-slate-800">RBQ ASRI MARGOMULYO</h2>
+                    <p class="text-xs text-slate-500">Silakan pilih hak akses masuk Anda di bawah ini</p>
+                </div>
+
+                <!-- Tab Pemilih Login -->
+                <div class="grid grid-cols-2 bg-slate-100 p-1 rounded-2xl text-xs font-bold">
+                    <button onclick="switchLoginTab('guru')" id="tab-btn-guru" class="py-2.5 rounded-xl bg-emerald-800 text-white shadow transition">Login Mudarris</button>
+                    <button onclick="switchLoginTab('wali')" id="tab-btn-wali" class="py-2.5 rounded-xl text-slate-600 hover:text-slate-900 transition">Wali Santri</button>
+                </div>
+
+                <!-- Form Login Guru -->
+                <form id="form-login-guru" onsubmit="handleLoginGuru(event)" class="space-y-4">
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 mb-1">Username Mudarris</label>
+                        <input type="text" id="login-guru-username" value="guru" required class="w-full px-4 py-3 rounded-xl border border-slate-200 text-sm focus:ring-2 focus:ring-emerald-600 focus:outline-none">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 mb-1">Password</label>
+                        <div class="relative">
+                            <input type="password" id="login-guru-password" value="guru123" required class="w-full px-4 py-3 rounded-xl border border-slate-200 text-sm focus:ring-2 focus:ring-emerald-600 focus:outline-none pr-10">
+                            <button type="button" onclick="togglePasswordVisibility('login-guru-password', 'eye-guru')" class="absolute right-3 top-3.5 text-slate-400 hover:text-slate-600 text-sm">
+                                <i class="fa-solid fa-eye" id="eye-guru"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <button type="submit" class="w-full py-3.5 bg-emerald-800 hover:bg-emerald-900 text-white rounded-xl font-bold text-sm shadow-md transition flex items-center justify-center space-x-2">
+                        <i class="fa-solid fa-right-to-bracket"></i>
+                        <span>Masuk Sebagai Mudarris</span>
+                    </button>
+                </form>
+
+                <!-- Form Login Wali Santri -->
+                <form id="form-login-wali" onsubmit="handleLoginSantri(event)" class="space-y-4 hidden">
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 mb-1">Nama Lengkap Santri</label>
+                        <input type="text" id="login-wali-nis" placeholder="Contoh: Abidah Naswa Umaira" required class="w-full px-4 py-3 rounded-xl border border-slate-200 text-sm focus:ring-2 focus:ring-emerald-600 focus:outline-none">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 mb-1">Password Wali</label>
+                        <div class="relative">
+                            <input type="password" id="login-wali-password" placeholder="Masukkan password wali" required class="w-full px-4 py-3 rounded-xl border border-slate-200 text-sm focus:ring-2 focus:ring-emerald-600 focus:outline-none pr-10">
+                            <button type="button" onclick="togglePasswordVisibility('login-wali-password', 'eye-wali')" class="absolute right-3 top-3.5 text-slate-400 hover:text-slate-600 text-sm">
+                                <i class="fa-solid fa-eye" id="eye-wali"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <button type="submit" class="w-full py-3.5 bg-amber-600 hover:bg-amber-700 text-white rounded-xl font-bold text-sm shadow-md transition flex items-center justify-center space-x-2">
+                        <i class="fa-solid fa-user-shield"></i>
+                        <span>Masuk Sebagai Wali Santri</span>
+                    </button>
+                </form>
+            </div>
+        </section>
+
+        <!-- VIEW: DASHBOARD GURU (ADMIN) -->
+        <section id="view-dashboard-guru" class="hidden space-y-4 sm:space-y-6">
+            <!-- Navigasi Menu Guru -->
+            <div class="flex overflow-x-auto gap-2 bg-white p-2 rounded-2xl shadow-sm border border-slate-100 no-scrollbar">
+                <button onclick="switchGuruTab('santri')" id="gtab-santri" class="flex-shrink-0 py-2.5 px-4 rounded-xl text-xs font-bold bg-emerald-800 text-white shadow transition flex items-center justify-center space-x-2">
+                    <i class="fa-solid fa-users"></i>
+                    <span>Data & Monitoring</span>
+                </button>
+                <button onclick="switchGuruTab('kelas')" id="gtab-kelas" class="flex-shrink-0 py-2.5 px-4 rounded-xl text-xs font-bold text-slate-600 hover:bg-slate-100 transition flex items-center justify-center space-x-2">
+                    <i class="fa-solid fa-layer-group"></i>
+                    <span>7 Kelompok Kelas</span>
+                </button>
+                <button onclick="switchGuruTab('tpq')" id="gtab-tpq" class="flex-shrink-0 py-2.5 px-4 rounded-xl text-xs font-bold text-slate-600 hover:bg-slate-100 transition flex items-center justify-center space-x-2">
+                    <i class="fa-solid fa-shield-halved"></i>
+                    <span>Keamanan Akun</span>
+                </button>
+            </div>
+
+            <!-- TAB KONTEN 1: DATA & MONITORING SANTRI -->
+            <div id="guru-content-santri" class="space-y-3 sm:space-y-4">
+                <div class="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 bg-white p-3 sm:p-4 rounded-2xl shadow-sm border border-slate-100">
+                    <div class="flex flex-col sm:flex-row items-stretch sm:items-center space-y-2 sm:space-y-0 sm:space-x-3 flex-grow">
+                        <div class="relative flex-grow">
+                            <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-3 text-slate-400 text-xs"></i>
+                            <input type="text" id="search-santri" oninput="renderSantriTable()" placeholder="Cari nama santri..." class="w-full pl-9 pr-4 py-2.5 sm:py-2 rounded-xl border border-slate-200 text-xs focus:outline-none focus:ring-2 focus:ring-emerald-600">
+                        </div>
+                        <select id="filter-kelas-santri" onchange="renderSantriTable()" class="px-3 py-2.5 sm:py-2 rounded-xl border border-slate-200 text-xs focus:outline-none focus:ring-2 focus:ring-emerald-600">
+                            <option value="ALL">Semua Kelas</option>
+                        </select>
+                    </div>
+                    <button onclick="openModalAddSantri()" class="bg-emerald-800 hover:bg-emerald-900 text-white px-4 py-2.5 sm:py-2 rounded-xl text-xs font-bold shadow transition flex items-center justify-center space-x-2">
+                        <i class="fa-solid fa-user-plus"></i>
+                        <span>Tambah Santri</span>
+                    </button>
+                </div>
+
+                <!-- Tabel Santri -->
+                <div class="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden">
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left border-collapse text-xs">
+                            <thead>
+                                <tr class="bg-slate-50 text-slate-600 border-b border-slate-100 font-bold whitespace-nowrap">
+                                    <th class="p-3.5 sm:p-4">Nama Lengkap Santri</th>
+                                    <th class="p-3.5 sm:p-4">Kelompok Kelas</th>
+                                    <th class="p-3.5 sm:p-4">Batas Ngaji Terakhir</th>
+                                    <th class="p-3.5 sm:p-4">Hafalan / Bait</th>
+                                    <th class="p-3.5 sm:p-4">Status Target</th>
+                                    <th class="p-3.5 sm:p-4 text-center">Aksi Cepat</th>
+                                </tr>
+                            </thead>
+                            <tbody id="table-santri-body" class="divide-y divide-slate-100">
+                                <!-- Data Santri Rendered Here -->
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="p-3 sm:p-4 bg-slate-50 border-t border-slate-100 flex items-center justify-between text-xs text-slate-500">
+                        <span>Total Santri: <strong id="total-santri-count">0</strong> Anak</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TAB KONTEN 2: KELOLA 7 KELOMPOK KELAS & TARGET -->
+            <div id="guru-content-kelas" class="hidden space-y-4">
+                <div class="bg-white p-4 sm:p-6 rounded-2xl shadow-sm border border-slate-100 space-y-4">
+                    <div>
+                        <h3 class="font-bold text-base text-slate-800">Manajemen 7 Kelompok Kelas & Kurikulum</h3>
+                        <p class="text-xs text-slate-500">Ubah nama kelompok kelas dan sesuaikan ketentuan hafalan target masing-masing kelas.</p>
+                    </div>
+                    <div id="kelas-settings-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                        <!-- Card Kelas Rendered Here -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- TAB KONTEN 3: PENGATURAN TPQ & KEAMANAN -->
+            <div id="guru-content-tpq" class="hidden space-y-4">
+                <div class="bg-white p-4 sm:p-6 rounded-2xl shadow-sm border border-slate-100 max-w-xl mx-auto space-y-6">
+                    <div>
+                        <h3 class="font-bold text-base text-slate-800 flex items-center space-x-2">
+                            <i class="fa-solid fa-gear text-emerald-700"></i>
+                            <span>Pengaturan TPQ & Keamanan Akun</span>
+                        </h3>
+                        <p class="text-xs text-slate-500 mt-1">Atur logo aplikasi dan ubah password Mudarris di sini.</p>
+                    </div>
+
+                    <!-- Informasi Identitas Permanen -->
+                    <div class="bg-emerald-50/70 p-4 rounded-2xl border border-emerald-200 text-xs space-y-1 text-slate-700">
+                        <div class="font-bold text-emerald-900 text-sm mb-1">Identitas Lembaga (Permanen)</div>
+                        <div>Lembaga: <strong class="text-slate-900">RBQ ASRI MARGOMULYO</strong></div>
+                        <div>Alamat: <strong class="text-slate-900">Margomulyo, Tegineneng, Pesawaran</strong></div>
+                    </div>
+
+                    <form onsubmit="saveTPQSettings(event)" class="space-y-4 text-xs">
+                        <!-- Menu Ganti Logo -->
+                        <div class="space-y-2 pt-2 border-t border-slate-100">
+                            <label class="block font-bold text-slate-700">Ganti Logo Aplikasi (Pilih Icon / Upload Gambar Galeri)</label>
+                            <div class="grid grid-cols-3 gap-2 sm:gap-3">
+                                <label class="flex flex-col items-center justify-center p-2.5 border rounded-xl cursor-pointer hover:bg-emerald-50 transition">
+                                    <input type="radio" name="logo-type" value="mosque" checked onchange="toggleLogoInput('preset')" class="mb-1">
+                                    <i class="fa-solid fa-mosque text-lg sm:text-xl text-emerald-800"></i>
+                                    <span class="text-[9px] sm:text-[10px] mt-1 font-bold">Masjid</span>
+                                </label>
+                                <label class="flex flex-col items-center justify-center p-2.5 border rounded-xl cursor-pointer hover:bg-emerald-50 transition">
+                                    <input type="radio" name="logo-type" value="quran" onchange="toggleLogoInput('preset')" class="mb-1">
+                                    <i class="fa-solid fa-quran text-lg sm:text-xl text-emerald-800"></i>
+                                    <span class="text-[9px] sm:text-[10px] mt-1">Al-Qur'an</span>
+                                </label>
+                                <label class="flex flex-col items-center justify-center p-2.5 border rounded-xl cursor-pointer hover:bg-emerald-50 transition">
+                                    <input type="radio" name="logo-type" value="upload" onchange="toggleLogoInput('upload')" class="mb-1">
+                                    <i class="fa-solid fa-image text-lg sm:text-xl text-emerald-800"></i>
+                                    <span class="text-[9px] sm:text-[10px] mt-1">Galeri</span>
+                                </label>
+                            </div>
+                            
+                            <!-- Input Upload Gambar -->
+                            <div id="logo-upload-container" class="hidden pt-2">
+                                <label class="block font-semibold text-slate-600 mb-1">Pilih File Foto/Gambar dari Galeri:</label>
+                                <input type="file" id="setting-tpq-logo-file" accept="image/*" class="w-full text-xs text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-emerald-50 file:text-emerald-700 hover:file:bg-emerald-100">
+                            </div>
+                        </div>
+
+                        <!-- Password Guru -->
+                        <div class="pt-2 border-t border-slate-100 space-y-3">
+                            <label class="block font-bold text-slate-700">Ubah Password Mudarris</label>
+                            <div class="relative">
+                                <input type="password" id="setting-guru-password" placeholder="Kosongkan jika tidak ingin diubah" class="w-full px-3 py-2.5 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-emerald-600 pr-10">
+                                <button type="button" onclick="togglePasswordVisibility('setting-guru-password', 'eye-set-guru')" class="absolute right-3 top-3 text-slate-400 hover:text-slate-600 text-sm">
+                                    <i class="fa-solid fa-eye" id="eye-set-guru"></i>
+                                </button>
+                            </div>
+                        </div>
+
+                        <button type="submit" class="w-full py-3 bg-emerald-800 hover:bg-emerald-900 text-white rounded-xl font-bold shadow transition flex items-center justify-center space-x-2">
+                            <i class="fa-solid fa-floppy-disk"></i>
+                            <span>Simpan Pengaturan</span>
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </section>
+
+        <!-- VIEW: DASHBOARD WALI SANTRI -->
+        <section id="view-dashboard-santri" class="hidden space-y-4 sm:space-y-6 max-w-4xl mx-auto">
+            <div class="bg-white p-5 sm:p-6 rounded-3xl shadow-sm border border-emerald-100 flex flex-col sm:flex-row items-center justify-between gap-4">
+                <div class="flex items-center space-x-4">
+                    <div class="w-14 h-14 sm:w-16 sm:h-16 bg-emerald-100 text-emerald-800 rounded-2xl flex items-center justify-center text-2xl sm:text-3xl shadow-inner flex-shrink-0">
+                        <i class="fa-solid fa-child-reaching"></i>
+                    </div>
+                    <div>
+                        <h2 id="santri-view-nama" class="text-lg sm:text-xl font-extrabold text-slate-800">-</h2>
+                        <span id="santri-view-kelas" class="inline-block mt-2 px-3 py-1 bg-emerald-50 text-emerald-800 rounded-full text-xs font-bold border border-emerald-200">-</span>
+                    </div>
+                </div>
+                <div class="text-right">
+                    <span class="text-[11px] bg-amber-100 text-amber-800 px-3 py-1 rounded-full font-bold">Mode Wali Santri (Lihat Saja)</span>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
+                <div class="bg-white p-5 sm:p-6 rounded-3xl shadow-sm border border-slate-100 space-y-4">
+                    <h3 class="font-bold text-sm text-slate-800 flex items-center space-x-2">
+                        <i class="fa-solid fa-book-open text-emerald-700"></i>
+                        <span>Perkembangan Ngaji Terbaru</span>
+                    </h3>
+                    <div id="santri-view-ngaji-box" class="bg-slate-50 p-4 rounded-2xl border border-slate-200 text-xs space-y-2">
+                    </div>
+                </div>
+
+                <div class="bg-white p-5 sm:p-6 rounded-3xl shadow-sm border border-slate-100 space-y-4">
+                    <h3 class="font-bold text-sm text-slate-800 flex items-center space-x-2">
+                        <i class="fa-solid fa-star text-amber-500"></i>
+                        <span>Monitoring Target Hafalan</span>
+                    </h3>
+                    <div id="santri-view-hafalan-box" class="bg-amber-50/60 p-4 rounded-2xl border border-amber-200 text-xs space-y-2">
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- FOOTER -->
+    <footer class="bg-white border-t border-slate-100 py-4 mt-8 text-center text-xs text-slate-400">
+        <p>&copy; 2026 <span id="footer-tpq-name">RBQ ASRI MARGOMULYO</span>. Aplikasi Manajemen & Monitoring Santri.</p>
+    </footer>
+
+    <!-- MODALS -->
+    <div id="modal-ngaji" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-white rounded-3xl max-w-md w-full p-5 sm:p-6 shadow-2xl space-y-4 max-h-[90vh] overflow-y-auto">
+            <div class="flex items-center justify-between border-b pb-3">
+                <h3 class="font-bold text-sm text-slate-800">Input Batas Ngaji Santri</h3>
+                <button onclick="closeModal('modal-ngaji')" class="text-slate-400 hover:text-slate-600"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <form onsubmit="saveBatasNgaji(event)" class="space-y-4 text-xs">
+                <input type="hidden" id="ngaji-santri-id">
+                <div>
+                    <label class="block font-bold text-slate-700 mb-1">Materi Ngaji Utama</label>
+                    <select id="ngaji-type" onchange="onNgajiTypeChange()" class="w-full px-3 py-2.5 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-emerald-600">
+                        <option value="Iqro">Iqro</option>
+                        <option value="Turutan">Turutan</option>
+                        <option value="Al-Qur'an">Al-Qur'an</option>
+                    </select>
+                </div>
+
+                <div id="ngaji-group-iqro" class="space-y-3">
+                    <div>
+                        <label class="block font-bold text-slate-700 mb-1">Jilid Iqro</label>
+                        <select id="ngaji-iqro-jilid" class="w-full px-3 py-2.5 rounded-xl border border-slate-200">
+                            <option value="Iqro 1">Iqro 1</option>
+                            <option value="Iqro 2">Iqro 2</option>
+                            <option value="Iqro 3">Iqro 3</option>
+                            <option value="Iqro 4">Iqro 4</option>
+                            <option value="Iqro 5">Iqro 5</option>
+                            <option value="Iqro 6">Iqro 6</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div id="ngaji-group-hal-baris" class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block font-bold text-slate-700 mb-1">Halaman</label>
+                        <input type="number" id="ngaji-halaman" min="1" max="50" value="1" class="w-full px-3 py-2.5 rounded-xl border border-slate-200">
+                    </div>
+                    <div>
+                        <label class="block font-bold text-slate-700 mb-1">Baris</label>
+                        <input type="number" id="ngaji-baris" min="1" max="15" value="1" class="w-full px-3 py-2.5 rounded-xl border border-slate-200">
+                    </div>
+                </div>
+
+                <div id="ngaji-group-quran" class="space-y-3 hidden">
+                    <div>
+                        <label class="block font-bold text-slate-700 mb-1">Nama Surah</label>
+                        <select id="ngaji-surah" class="w-full px-3 py-2.5 rounded-xl border border-slate-200">
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block font-bold text-slate-700 mb-1">Nomor Ayat</label>
+                        <input type="number" id="ngaji-ayat" min="1" max="300" value="1" class="w-full px-3 py-2.5 rounded-xl border border-slate-200">
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block font-bold text-slate-700 mb-1">Catatan Guru (Opsional)</label>
+                    <input type="text" id="ngaji-catatan" placeholder="Contoh: Lancar, tajwid perlu diperhatikan" class="w-full px-3 py-2.5 rounded-xl border border-slate-200">
+                </div>
+
+                <div class="flex justify-end space-x-2 pt-2">
+                    <button type="button" onclick="closeModal('modal-ngaji')" class="px-4 py-2.5 bg-slate-100 rounded-xl font-bold text-slate-600">Batal</button>
+                    <button type="submit" class="px-4 py-2.5 bg-emerald-800 text-white rounded-xl font-bold shadow">Simpan Batas Ngaji</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div id="modal-hafalan" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-white rounded-3xl max-w-lg w-full p-5 sm:p-6 shadow-2xl space-y-4 max-h-[90vh] flex flex-col">
+            <div class="flex items-center justify-between border-b pb-3">
+                <div>
+                    <h3 class="font-bold text-sm text-slate-800" id="hafalan-modal-title">Setoran Hafalan</h3>
+                    <p class="text-[11px] text-slate-500" id="hafalan-modal-subtitle">Centang surah/bait yang sudah dihafal santri</p>
+                </div>
+                <button onclick="closeModal('modal-hafalan')" class="text-slate-400 hover:text-slate-600"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            
+            <div id="hafalan-checklist-container" class="overflow-y-auto flex-grow space-y-2 pr-1 text-xs">
+            </div>
+
+            <div class="flex justify-end space-x-2 pt-3 border-t">
+                <button type="button" onclick="closeModal('modal-hafalan')" class="px-5 py-2.5 bg-emerald-800 text-white rounded-xl font-bold text-xs shadow">Selesai</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="modal-santri-form" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-white rounded-3xl max-w-md w-full p-5 sm:p-6 shadow-2xl space-y-4 max-h-[90vh] overflow-y-auto">
+            <div class="flex items-center justify-between border-b pb-3">
+                <h3 class="font-bold text-sm text-slate-800" id="santri-modal-title">Tambah Santri Baru</h3>
+                <button onclick="closeModal('modal-santri-form')" class="text-slate-400 hover:text-slate-600"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <form onsubmit="saveSantriData(event)" class="space-y-4 text-xs">
+                <input type="hidden" id="form-santri-edit-id">
+                <div>
+                    <label class="block font-bold text-slate-700 mb-1">Nama Lengkap Santri</label>
+                    <input type="text" id="form-santri-nama" placeholder="Contoh: Ahmad Fauzi" required class="w-full px-3 py-2.5 rounded-xl border border-slate-200">
+                </div>
+                <div>
+                    <label class="block font-bold text-slate-700 mb-1">Kelompok Kelas</label>
+                    <select id="form-santri-kelas" class="w-full px-3 py-2.5 rounded-xl border border-slate-200">
+                    </select>
+                </div>
+                <div>
+                    <label class="block font-bold text-slate-700 mb-1">Pilihan Kurikulum Ngaji</label>
+                    <select id="form-santri-kurikulum" class="w-full px-3 py-2.5 rounded-xl border border-slate-200">
+                        <option value="Iqro">Iqro</option>
+                        <option value="Turutan">Turutan</option>
+                        <option value="Al-Qur'an">Al-Qur'an</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block font-bold text-slate-700 mb-1">Password Wali</label>
+                    <div class="relative">
+                        <input type="text" id="form-santri-password" placeholder="Password login wali" required class="w-full px-3 py-2.5 rounded-xl border border-slate-200 pr-10">
+                        <button type="button" onclick="togglePasswordVisibility('form-santri-password', 'eye-form-santri')" class="absolute right-3 top-3 text-slate-400 hover:text-slate-600">
+                            <i class="fa-solid fa-eye" id="eye-form-santri"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="flex justify-end space-x-2 pt-2">
+                    <button type="button" onclick="closeModal('modal-santri-form')" class="px-4 py-2.5 bg-slate-100 rounded-xl font-bold text-slate-600">Batal</button>
+                    <button type="submit" class="px-4 py-2.5 bg-emerald-800 text-white rounded-xl font-bold shadow">Simpan Data Santri</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div id="modal-edit-target-kelas" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-white rounded-3xl max-w-md w-full p-5 sm:p-6 shadow-2xl space-y-4 max-h-[90vh] overflow-y-auto">
+            <div class="flex items-center justify-between border-b pb-3">
+                <h3 class="font-bold text-sm text-slate-800" id="target-modal-title">Ubah Ketentuan Target Kelas</h3>
+                <button onclick="closeModal('modal-edit-target-kelas')" class="text-slate-400 hover:text-slate-600"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <form onsubmit="saveTargetKelas(event)" class="space-y-4 text-xs">
+                <input type="hidden" id="target-kelas-id">
+                <div>
+                    <label class="block font-bold text-slate-700 mb-1">Nama Kelompok Kelas</label>
+                    <input type="text" id="target-kelas-name" required class="w-full px-3 py-2.5 rounded-xl border border-slate-200">
+                </div>
+                <div>
+                    <label class="block font-bold text-slate-700 mb-1">Jenis Target Hafalan</label>
+                    <select id="target-kelas-hafalan-type" onchange="onTargetTypeChange()" class="w-full px-3 py-2.5 rounded-xl border border-slate-200">
+                        <option value="JUZ_AMMA">Juz 'Amma (An-Naba' s/d An-Nas)</option>
+                        <option value="AQIDATUL_AWAM">Kitab Aqidatul Awam</option>
+                        <option value="NONE">Tanpa Target Hafalan</option>
+                    </select>
+                </div>
+                <div id="target-value-container">
+                    <label class="block font-bold text-slate-700 mb-1" id="target-label-text">Target Minimal Hafalan</label>
+                    <select id="target-kelas-value" class="w-full px-3 py-2.5 rounded-xl border border-slate-200">
+                    </select>
+                </div>
+                <div class="flex justify-end space-x-2 pt-2">
+                    <button type="button" onclick="closeModal('modal-edit-target-kelas')" class="px-4 py-2.5 bg-slate-100 rounded-xl font-bold text-slate-600">Batal</button>
+                    <button type="submit" class="px-4 py-2.5 bg-emerald-800 text-white rounded-xl font-bold shadow">Simpan Ketentuan</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- FIREBASE & JS LOGIC -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, signInAnonymously, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, doc, setDoc, onSnapshot, getDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+        const DEFAULT_LOGO_URL = "https://i.ibb.co/6yJ4Hqg/1758082325637-jpg.jpg";
+
+        const JUZ_AMMA_LIST = [
+            { id: 78, name: "An-Naba'" }, { id: 79, name: "An-Nazi'at" }, { id: 80, name: "'Abasa" },
+            { id: 81, name: "At-Takwir" }, { id: 82, name: "Al-Infitar" }, { id: 83, name: "Al-Muthaffifin" },
+            { id: 84, name: "Al-Insyiqaq" }, { id: 85, name: "Al-Buruj" }, { id: 86, name: "At-Tariq" },
+            { id: 87, name: "Al-A'la" }, { id: 88, name: "Al-Ghasyiyah" }, { id: 89, name: "Al-Fajr" },
+            { id: 90, name: "Al-Balad" }, { id: 91, name: "Asy-Syams" }, { id: 92, name: "Al-Lail" },
+            { id: 93, name: "Ad-Duha" }, { id: 94, name: "Alam Nasyroh (Ash-Sharh)" }, { id: 95, name: "At-Tin" },
+            { id: 96, name: "Al-'Alaq" }, { id: 97, name: "Al-Qadr" }, { id: 98, name: "Al-Bayyinah" },
+            { id: 99, name: "Az-Zalzalah" }, { id: 100, name: "Al-'Adiyat" }, { id: 101, name: "Al-Qari'ah" },
+            { id: 102, name: "At-Takatsur" }, { id: 103, name: "Al-'Asr" }, { id: 104, name: "Al-Humazah" },
+            { id: 105, name: "Al-Fil" }, { id: 106, name: "Quraisy" }, { id: 107, name: "Al-Ma'un" },
+            { id: 108, name: "Al-Kautsar" }, { id: 109, name: "Al-Kafirun" }, { id: 110, name: "An-Nasr" },
+            { id: 111, name: "Al-Lahab" }, { id: 112, name: "Al-Ikhlas" }, { id: 113, name: "Al-Falaq" },
+            { id: 114, name: "An-Nas" }
+        ];
+
+        const ALL_SURAHS = [
+            { id: 1, name: "Al-Fatihah" }, { id: 2, name: "Al-Baqarah" }, { id: 3, name: "Ali 'Imran" },
+            { id: 4, name: "An-Nisa'" }, { id: 5, name: "Al-Ma'idah" }, { id: 6, name: "Al-An'am" },
+            { id: 7, name: "Al-A'raf" }, { id: 8, name: "Al-Anfal" }, { id: 9, name: "At-Taubah" },
+            { id: 10, name: "Yunus" }, { id: 11, name: "Hud" }, { id: 12, name: "Yusuf" },
+            { id: 13, name: "Ar-Ra'd" }, { id: 14, name: "Ibrahim" }, { id: 15, name: "Al-Hijr" },
+            { id: 16, name: "An-Nahl" }, { id: 17, name: "Al-Isra" }, { id: 18, name: "Al-Kahf" },
+            { id: 19, name: "Maryam" }, { id: 20, name: "Ta-Ha" }, { id: 21, name: "Al-Anbiya" },
+            { id: 22, name: "Al-Hajj" }, { id: 23, name: "Al-Mu'minun" }, { id: 24, name: "An-Nur" },
+            { id: 25, name: "Al-Furqan" }, { id: 26, name: "Asy-Syu'ara" }, { id: 27, name: "An-Naml" },
+            { id: 28, name: "Al-Qasas" }, { id: 29, name: "Al-'Ankabut" }, { id: 30, name: "Ar-Rum" },
+            { id: 31, name: "Luqman" }, { id: 32, name: "As-Sajdah" }, { id: 33, name: "Al-Ahzab" },
+            { id: 34, name: "Saba'" }, { id: 35, name: "Fatir" }, { id: 36, name: "Ya-Sin" },
+            { id: 37, name: "Ash-Shaffat" }, { id: 38, name: "Sad" }, { id: 39, name: "Az-Zumar" },
+            { id: 40, name: "Gafir" }, { id: 41, name: "Fussilat" }, { id: 42, name: "Asy-Syura" },
+            { id: 43, name: "Az-Zukhruf" }, { id: 44, name: "Ad-Dukhan" }, { id: 45, name: "Al-Jasiyah" },
+            { id: 46, name: "Al-Ahqaf" }, { id: 47, name: "Muhammad" }, { id: 48, name: "Al-Fath" },
+            { id: 49, name: "Al-Hujurat" }, { id: 50, name: "Qaf" }, { id: 51, name: "Adz-Zariyat" },
+            { id: 52, name: "At-Tur" }, { id: 53, name: "An-Najm" }, { id: 54, name: "Al-Qamar" },
+            { id: 55, name: "Ar-Rahman" }, { id: 56, name: "Al-Waqi'ah" }, { id: 57, name: "Al-Hadid" },
+            { id: 58, name: "Al-Mujadilah" }, { id: 59, name: "Al-Hasyr" }, { id: 60, name: "Al-Mumtahanah" },
+            { id: 61, name: "As-Saff" }, { id: 62, name: "Al-Jumu'ah" }, { id: 63, name: "Al-Munafiqun" },
+            { id: 64, name: "At-Tagabun" }, { id: 65, name: "At-Talaq" }, { id: 66, name: "At-Tahrim" },
+            { id: 67, name: "Al-Mulk" }, { id: 68, name: "Al-Qalam" }, { id: 69, name: "Al-Haqqah" },
+            { id: 70, name: "Al-Ma'arij" }, { id: 71, name: "Nuh" }, { id: 72, name: "Al-Jinn" },
+            { id: 73, name: "Al-Muzzammil" }, { id: 74, name: "Al-Muddassir" }, { id: 75, name: "Al-Qiyamah" },
+            { id: 76, name: "Al-Insan" }, { id: 77, name: "Al-Mursalat" },
+            ...JUZ_AMMA_LIST
+        ];
+
+        const DEFAULT_KELAS = [
+            { id: 'k_istidad_a', name: 'ISTIDAT A', hafalanType: 'NONE', targetHafalan: 0 },
+            { id: 'k_istidad_b', name: 'ISTIDAT B', hafalanType: 'NONE', targetHafalan: 0 },
+            { id: 'k_ula_a', name: 'ULA A', hafalanType: 'JUZ_AMMA', targetHafalan: 114 },
+            { id: 'k_ula_b', name: 'ULA B', hafalanType: 'JUZ_AMMA', targetHafalan: 114 },
+            { id: 'k_tsani', name: 'TSANI', hafalanType: 'JUZ_AMMA', targetHafalan: 114 },
+            { id: 'k_tsalist', name: 'TSALIST', hafalanType: 'JUZ_AMMA', targetHafalan: 114 },
+            { id: 'k_wustho', name: 'WUSTHO', hafalanType: 'AQIDATUL_AWAM', targetHafalan: 30 }
+        ];
+
+        const NAMES_ISTIDAT_A = [
+            "Abidah Naswa Umaira", "Afatar Dian Pratama", "Aliyana Putri Saputra", "Amanda Mulyani Saputri",
+            "Arsyad Hanafi", "Arsyila Naqueenza", "Brendan Apta Raditya", "Byakta Mouza Alsakti",
+            "Elmira Afsheena", "Hafiza Al Zahra", "Kamila Syifa Azzahra", "Muhammad Abyan Prasetyo",
+            "Muhammad Raka Salendra", "Muhammad Rayyan Alfarizki", "Muhammad Shafin Alfarizqi",
+            "Muhjammad Ardana", "Najwa Algania Khalissa", "Ravel Farulian", "Rayya Nadira Putri"
+        ];
+
+        const NAMES_ISTIDAT_B = [
+            "Adrian Dza Keandra", "Alin Nur Alisa", "Anjani Zeline Zakehsia", "Cleopatra Shaqueena Khayara",
+            "Delisa Nur Fazura", "Giska Felicia Permata", "Kharisna Azzahra", "Rafka Azzam Pratama",
+            "Rifki Mutaqi", "Riski Tanfircasiyo", "Shakila", "Zenia Asyifa Mecca"
+        ];
+
+        const NAMES_ULA_A = [
+            "Abizar Aksa Pramono", "Afifah Nahda Rafanda", "Anindita Kesya Zahra", "Aqila Hasna Humaira",
+            "Arsyila Farzana Anantari", "Asyifa Nur Aini", "Azalea Zahin Seza Saputra", "Azalea Zavierra",
+            "Azzam Nur Wahid Sutoyo", "Calisa Aprilia Faradina", "Daru Syarif Firdaus", "Datasya Alfiza Maulidia",
+            "Elea Rizkia Matsubati", "M. Farzan Khalif", "Muhammad Arsya Asyidik", "Muhammad Nadeo Arga Winata",
+            "Naila Sekar Pramudya", "Narendra Arsen Arafif", "Ramadhan Cakra Bumi S.", "Serena She Keandra"
+        ];
+
+        const NAMES_ULA_B = [
+            "Ayudia Azzahro", "Abiyu Nadif Ramadhan", "Agam Abdillah Pratama", "Ahmad Ahlan Alfajar",
+            "Alika Ayudia Qinara", "Alisa Zakiya Azzahra", "Alka Hafiz Rafasa", "Alvero Vernando",
+            "Annisa Faliha", "Arista Dinda Rafanda", "Arsyila Herni Al Mahyra", "Azka Mahardika",
+            "Fera Anjani", "Haifa Ais Faiha", "Ikhsan Maulana", "Jasmine Nur Anisa",
+            "Muhammad Ahlan Alfajar", "Muhammad Arfa Riza"
+        ];
+
+        const NAMES_TSANI = [
+            "Adnan Alhafiz Sutrisno", "Agam Satria", "Ahmad Riki Arosyid", "Alfian Pradipta",
+            "Ammar Hafiz Alfatih", "Andika Aji Ghifari", "Andin Aurelia", "Aqila hanifa Zahira",
+            "Arka Maulana Pratama", "Bisma Mulya Agung", "Citra Silvia Rahmawati", "Diki Ardiansyah",
+            "Inaya Azmi Atifa", "Kevin Aldiano", "Nabila Ulfa", "Naira Ayunda Rahmadani",
+            "Nurkasih Maisaroh", "Pandu Kaylesa", "Rafif Shava Andika", "Rania Fazila Sahfani",
+            "Refiza Aprilia Najwa", "Revita Aprilia Anggraini", "Yoga Adi Maulana", "Zaki Almair Jamil"
+        ];
+
+        const NAMES_TSALIST = [
+            "Affan Nurmajid Ramadhan", "Afiqa Nauratul Hasanah", "Annisa Wafiqa Qurrota A'yun",
+            "Arisa Dewi Damayanti", "Ayra MeykaPutri", "Esa Aulia", "Fahmi Dwi Kurniawan",
+            "Ilham Ramadhan", "Liana Tantri", "Naya Cita Izzatunnisa", "Salsa Billa Aqila",
+            "Sofia Raudhatun Nisa", "Ulfa Nur Azizah"
+        ];
+
+        const NAMES_WUSTHO = [
+            "Adamsyah Maulana Ramadhan", "Alief Lutfi Arizki", "Astrid Mutiara Riscita", "Aufa Ataya Izdihar",
+            "Brelyan Prayulesa", "Dirga Farist Maulana", "Dwi Mayang Sari", "Felina Rahma Friyanti",
+            "Hafidz A'maludin", "Intan Diana Ifanti", "Keysha Abeliza", "M. Ega Al Habsyi",
+            "Muhammad Ridwan", "Raihan Pratama Dila", "Wahyu Prasetio", "Yori Alzira Putri", "Zidhan Alfa Reza"
+        ];
+
+        function generateSantriList() {
+            let list = [];
+            let counter = 1;
+
+            const addGroup = (names, kelasId) => {
+                names.forEach(name => {
+                    const firstName = name.split(' ')[0].toLowerCase().replace(/[^a-z0-9]/g, '');
+                    const password = firstName + '2026';
+                    list.push({
+                        id: 's_' + counter++,
+                        nama: name,
+                        kelasId: kelasId,
+                        password: password,
+                        ngaji: { type: 'Iqro', iqroJilid: 'Iqro 1', halaman: 1, baris: 1, surahName: 'Al-Fatihah', ayat: 1, catatan: '-', lastUpdate: '-' },
+                        hafalan: []
+                    });
+                });
+            };
+
+            addGroup(NAMES_ISTIDAT_A, 'k_istidad_a');
+            addGroup(NAMES_ISTIDAT_B, 'k_istidad_b');
+            addGroup(NAMES_ULA_A, 'k_ula_a');
+            addGroup(NAMES_ULA_B, 'k_ula_b');
+            addGroup(NAMES_TSANI, 'k_tsani');
+            addGroup(NAMES_TSALIST, 'k_tsalist');
+            addGroup(NAMES_WUSTHO, 'k_wustho');
+
+            return list;
+        }
+
+        const DEFAULT_SANTRI = generateSantriList();
+
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'rbq-asri-margomulyo-v1';
+        const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : {
+            apiKey: "AIzaSyDummyKeyForLocalSandbox",
+            authDomain: "tpq-app.firebaseapp.com",
+            projectId: "tpq-app",
+            storageBucket: "tpq-app.appspot.com",
+            messagingSenderId: "123456789",
+            appId: "1:123:web:abc"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+        const auth = getAuth(app);
+
+        let appConfig = {
+            guruPassword: "guru123",
+            logoType: "mosque",
+            customLogoBase64: ""
+        };
+        let appKelas = [...DEFAULT_KELAS];
+        let appSantri = [...DEFAULT_SANTRI];
+        let currentUser = null;
+        let isCloudConnected = false;
+
+        window.onload = async function() {
+            loadFromLocalStorage();
+            try {
+                if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
+                    await signInWithCustomToken(auth, __initial_auth_token);
+                } else {
+                    await signInAnonymously(auth);
+                }
+                isCloudConnected = true;
+                updateCloudStatus(true);
+            } catch (e) {
+                console.warn("Auth fallback offline mode:", e);
+                updateCloudStatus(false);
+            }
+
+            initRealtimeSync();
+            applyTPQBranding();
+            populateSurahDropdown();
+            populateKelasDropdowns();
+        };
+
+        function updateCloudStatus(online) {
+            const statusEl = document.getElementById('cloud-status');
+            if (statusEl) {
+                if (online) {
+                    statusEl.className = "text-[10px] bg-emerald-700/80 text-emerald-100 px-2 py-0.5 rounded-full flex items-center space-x-1";
+                    statusEl.innerHTML = `<i class="fa-solid fa-cloud text-amber-300"></i><span class="hidden sm:inline">Online Sync</span>`;
+                } else {
+                    statusEl.className = "text-[10px] bg-amber-700/80 text-amber-100 px-2 py-0.5 rounded-full flex items-center space-x-1";
+                    statusEl.innerHTML = `<i class="fa-solid fa-cloud-slash text-amber-200"></i><span class="hidden sm:inline">Lokal (Offline)</span>`;
+                }
+            }
+        }
+
+        function loadFromLocalStorage() {
+            try {
+                const localData = localStorage.getItem('rbq_asri_backup_v1');
+                if (localData) {
+                    const parsed = JSON.parse(localData);
+                    if (parsed.config) appConfig = { ...appConfig, ...parsed.config };
+                    if (parsed.kelas) appKelas = parsed.kelas;
+                    if (parsed.santri) appSantri = parsed.santri;
+                }
+            } catch (e) {
+                console.warn("Local storage load error:", e);
+            }
+        }
+
+        function saveToLocalStorage() {
+            try {
+                localStorage.setItem('rbq_asri_backup_v1', JSON.stringify({
+                    config: appConfig,
+                    kelas: appKelas,
+                    santri: appSantri,
+                    updatedAt: new Date().toISOString()
+                }));
+            } catch (e) {
+                console.warn("Local storage save error:", e);
+            }
+        }
+
+        function initRealtimeSync() {
+            const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'tpq_records', 'master_data');
+            
+            // Listener Realtime Terhubung Antar Device
+            onSnapshot(docRef, (docSnap) => {
+                if (docSnap.exists()) {
+                    const data = docSnap.data();
+                    if (data.config) appConfig = { ...appConfig, ...data.config };
+                    if (data.kelas) appKelas = data.kelas;
+                    if (data.santri) appSantri = data.santri;
+                    
+                    saveToLocalStorage();
+                    applyTPQBranding();
+                    populateKelasDropdowns();
+                    
+                    // Jika wali santri sedang membuka aplikasi, tampilan langsung di-refresh otomatis
+                    if (currentUser) {
+                        if (currentUser.role === 'GURU') {
+                            renderSantriTable();
+                        } else if (currentUser.role === 'WALI') {
+                            const updated = appSantri.find(s => s.id === currentUser.santriObj.id || s.nama.toLowerCase() === currentUser.santriObj.nama.toLowerCase());
+                            if (updated) {
+                                currentUser.santriObj = updated;
+                                renderSantriViewDashboard(updated);
+                            }
+                        }
+                    }
+                } else {
+                    saveToCloud();
+                }
+            }, (error) => {
+                console.warn("Cloud sync error / fallback to local:", error.message);
+                updateCloudStatus(false);
+            });
+        }
+
+        async function saveToCloud() {
+            saveToLocalStorage();
+            const user = auth.currentUser;
+            if (!user) return;
+            try {
+                const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'tpq_records', 'master_data');
+                await setDoc(docRef, {
+                    config: appConfig,
+                    kelas: appKelas,
+                    santri: appSantri,
+                    updatedAt: new Date().toISOString()
+                });
+                updateCloudStatus(true);
+            } catch (e) {
+                console.warn("Cloud write error:", e.message);
+            }
+        }
+
+        function applyTPQBranding() {
+            const logoHeader = document.getElementById('header-logo-container');
+            const logoLoginContainer = document.querySelector('#view-login .w-20.h-20');
+
+            let logoHtmlHeader = '';
+            let logoHtmlLogin = '';
+
+            if (appConfig.logoType === 'upload' && appConfig.customLogoBase64) {
+                logoHtmlHeader = `<img src="${appConfig.customLogoBase64}" class="w-full h-full object-contain rounded-full">`;
+                logoHtmlLogin = `<img src="${appConfig.customLogoBase64}" class="w-full h-full object-contain rounded-full">`;
+            } else if (appConfig.logoType === 'quran') {
+                logoHtmlHeader = `<i class="fa-solid fa-quran text-amber-300 text-xl"></i>`;
+                logoHtmlLogin = `<i class="fa-solid fa-quran text-emerald-700 text-4xl"></i>`;
+            } else {
+                logoHtmlHeader = `<i class="fa-solid fa-mosque text-amber-300 text-xl"></i>`;
+                logoHtmlLogin = `<i class="fa-solid fa-mosque text-emerald-700 text-4xl"></i>`;
+            }
+
+            if (logoHeader) logoHeader.innerHTML = logoHtmlHeader;
+            if (logoLoginContainer) logoLoginContainer.innerHTML = logoHtmlLogin;
+        }
+
+        function populateSurahDropdown() {
+            const select = document.getElementById('ngaji-surah');
+            if (!select) return;
+            select.innerHTML = '';
+            ALL_SURAHS.forEach(s => {
+                const opt = document.createElement('option');
+                opt.value = s.name;
+                opt.textContent = `${s.id}. ${s.name}`;
+                select.appendChild(opt);
+            });
+        }
+
+        function populateKelasDropdowns() {
+            const filterSelect = document.getElementById('filter-kelas-santri');
+            const formSelect = document.getElementById('form-santri-kelas');
+            
+            if (filterSelect) {
+                filterSelect.innerHTML = '<option value="ALL">Semua Kelas</option>';
+                appKelas.forEach(k => {
+                    const opt = document.createElement('option');
+                    opt.value = k.id;
+                    opt.textContent = k.name;
+                    filterSelect.appendChild(opt);
+                });
+            }
+
+            if (formSelect) {
+                formSelect.innerHTML = '';
+                appKelas.forEach(k => {
+                    const opt = document.createElement('option');
+                    opt.value = k.id;
+                    opt.textContent = k.name;
+                    formSelect.appendChild(opt);
+                });
+            }
+        }
+
+        window.switchLoginTab = function(role) {
+            const tabGuru = document.getElementById('tab-btn-guru');
+            const tabWali = document.getElementById('tab-btn-wali');
+            const formGuru = document.getElementById('form-login-guru');
+            const formWali = document.getElementById('form-login-wali');
+
+            if (role === 'guru') {
+                tabGuru.className = "py-2.5 rounded-xl bg-emerald-800 text-white shadow transition";
+                tabWali.className = "py-2.5 rounded-xl text-slate-600 hover:text-slate-900 transition";
+                formGuru.classList.remove('hidden');
+                formWali.classList.add('hidden');
+            } else {
+                tabWali.className = "py-2.5 rounded-xl bg-amber-600 text-white shadow transition";
+                tabGuru.className = "py-2.5 rounded-xl text-slate-600 hover:text-slate-900 transition";
+                formWali.classList.remove('hidden');
+                formGuru.classList.add('hidden');
+            }
+        };
+
+        window.togglePasswordVisibility = function(inputId, iconId) {
+            const input = document.getElementById(inputId);
+            const icon = document.getElementById(iconId);
+            if (!input || !icon) return;
+            if (input.type === 'password') {
+                input.type = 'text';
+                icon.className = 'fa-solid fa-eye-slash';
+            } else {
+                input.type = 'password';
+                icon.className = 'fa-solid fa-eye';
+            }
+        };
+
+        window.handleLoginGuru = function(e) {
+            e.preventDefault();
+            const u = document.getElementById('login-guru-username').value.trim();
+            const p = document.getElementById('login-guru-password').value;
+
+            if (u === 'guru' && p === appConfig.guruPassword) {
+                currentUser = { role: 'GURU' };
+                enterDashboard();
+            } else {
+                alert('Username atau Password Mudarris salah!');
+            }
+        };
+
+        window.handleLoginSantri = function(e) {
+            e.preventDefault();
+            const namaInput = document.getElementById('login-wali-nis').value.trim().toLowerCase();
+            const passInput = document.getElementById('login-wali-password').value.trim();
+
+            const santri = appSantri.find(s => s.nama.toLowerCase() === namaInput);
+            if (!santri) {
+                alert('Nama Lengkap Santri tidak ditemukan!');
+                return;
+            }
+
+            if (santri.password === passInput) {
+                currentUser = { role: 'WALI', santriObj: santri };
+                enterDashboard();
+            } else {
+                alert('Password Wali salah!');
+            }
+        };
+
+        window.handleLogout = function() {
+            currentUser = null;
+            document.getElementById('view-dashboard-guru').classList.add('hidden');
+            document.getElementById('view-dashboard-santri').classList.add('hidden');
+            document.getElementById('view-login').classList.remove('hidden');
+            document.getElementById('header-user-info').classList.add('hidden');
+        };
+
+        function enterDashboard() {
+            document.getElementById('view-login').classList.add('hidden');
+            document.getElementById('header-user-info').classList.remove('hidden');
+
+            if (currentUser.role === 'GURU') {
+                document.getElementById('header-welcome-text').textContent = 'Halo, Mudarris';
+                document.getElementById('view-dashboard-guru').classList.remove('hidden');
+                document.getElementById('view-dashboard-santri').classList.add('hidden');
+                switchGuruTab('santri');
+            } else {
+                document.getElementById('header-welcome-text').textContent = `Wali: ${currentUser.santriObj.nama}`;
+                document.getElementById('view-dashboard-santri').classList.remove('hidden');
+                document.getElementById('view-dashboard-guru').classList.add('hidden');
+                renderSantriViewDashboard(currentUser.santriObj);
+            }
+        }
+
+        window.switchGuruTab = function(tab) {
+            const tSantri = document.getElementById('gtab-santri');
+            const tKelas = document.getElementById('gtab-kelas');
+            const tTpq = document.getElementById('gtab-tpq');
+
+            const cSantri = document.getElementById('guru-content-santri');
+            const cKelas = document.getElementById('guru-content-kelas');
+            const cTpq = document.getElementById('guru-content-tpq');
+
+            [tSantri, tKelas, tTpq].forEach(t => {
+                t.className = "flex-shrink-0 py-2.5 px-4 rounded-xl text-xs font-bold text-slate-600 hover:bg-slate-100 transition flex items-center justify-center space-x-2";
+            });
+            [cSantri, cKelas, cTpq].forEach(c => c.classList.add('hidden'));
+
+            if (tab === 'santri') {
+                tSantri.className = "flex-shrink-0 py-2.5 px-4 rounded-xl text-xs font-bold bg-emerald-800 text-white shadow transition flex items-center justify-center space-x-2";
+                cSantri.classList.remove('hidden');
+                renderSantriTable();
+            } else if (tab === 'kelas') {
+                tKelas.className = "flex-shrink-0 py-2.5 px-4 rounded-xl text-xs font-bold bg-emerald-800 text-white shadow transition flex items-center justify-center space-x-2";
+                cKelas.classList.remove('hidden');
+                renderKelasSettings();
+            } else if (tab === 'tpq') {
+                tTpq.className = "flex-shrink-0 py-2.5 px-4 rounded-xl text-xs font-bold bg-emerald-800 text-white shadow transition flex items-center justify-center space-x-2";
+                cTpq.classList.remove('hidden');
+                loadTPQSettingsForm();
+            }
+        };
+
+        function loadTPQSettingsForm() {
+            document.getElementById('setting-guru-password').value = "";
+            const radios = document.getElementsByName('logo-type');
+            radios.forEach(r => {
+                if (r.value === appConfig.logoType) r.checked = true;
+            });
+            toggleLogoInput(appConfig.logoType === 'upload' ? 'upload' : 'preset');
+        }
+
+        window.toggleLogoInput = function(mode) {
+            const container = document.getElementById('logo-upload-container');
+            if (mode === 'upload') {
+                container.classList.remove('hidden');
+            } else {
+                container.classList.add('hidden');
+            }
+        };
+
+        window.saveTPQSettings = async function(e) {
+            e.preventDefault();
+            const radios = document.getElementsByName('logo-type');
+            for (let r of radios) {
+                if (r.checked) {
+                    appConfig.logoType = r.value;
+                    break;
+                }
+            }
+
+            const newPass = document.getElementById('setting-guru-password').value.trim();
+            if (newPass) {
+                appConfig.guruPassword = newPass;
+            }
+
+            if (appConfig.logoType === 'upload') {
+                const fileInput = document.getElementById('setting-tpq-logo-file');
+                if (fileInput.files && fileInput.files[0]) {
+                    const reader = new FileReader();
+                    reader.onload = async function(evt) {
+                        appConfig.customLogoBase64 = evt.target.result;
+                        await saveToCloud();
+                        applyTPQBranding();
+                        alert('Pengaturan Logo & Password berhasil disimpan!');
+                    };
+                    reader.readAsDataURL(fileInput.files[0]);
+                    return;
+                }
+            }
+
+            await saveToCloud();
+            applyTPQBranding();
+            alert('Pengaturan Logo & Password berhasil disimpan!');
+        };
+
+        window.renderSantriTable = function() {
+            const tbody = document.getElementById('table-santri-body');
+            const searchInput = document.getElementById('search-santri');
+            const filterKelasInput = document.getElementById('filter-kelas-santri');
+            if (!tbody || !searchInput || !filterKelasInput) return;
+
+            const search = searchInput.value.toLowerCase();
+            const filterKelas = filterKelasInput.value;
+
+            tbody.innerHTML = '';
+
+            let filtered = appSantri.filter(s => {
+                const matchSearch = s.nama.toLowerCase().includes(search);
+                const matchKelas = filterKelas === 'ALL' || s.kelasId === filterKelas;
+                return matchSearch && matchKelas;
+            });
+
+            document.getElementById('total-santri-count').textContent = filtered.length;
+
+            filtered.forEach(s => {
+                const kelas = appKelas.find(k => k.id === s.kelasId) || { name: '-', hafalanType: 'JUZ_AMMA', targetHafalan: 114 };
+                const tr = document.createElement('tr');
+                tr.className = "hover:bg-slate-50 transition border-b border-slate-100";
+
+                let ngajiText = '-';
+                if (s.ngaji.type === 'Iqro') {
+                    ngajiText = `<span class="font-bold text-emerald-700">${s.ngaji.iqroJilid}</span> - Hal ${s.ngaji.halaman}, Baris ${s.ngaji.baris}`;
+                } else if (s.ngaji.type === 'Turutan') {
+                    ngajiText = `<span class="font-bold text-emerald-700">Turutan</span> - Hal ${s.ngaji.halaman}, Baris ${s.ngaji.baris}`;
+                } else if (s.ngaji.type === "Al-Qur'an") {
+                    ngajiText = `<span class="font-bold text-emerald-700">Al-Qur'an</span> - Surah ${s.ngaji.surahName}, Ayat ${s.ngaji.ayat}`;
+                }
+
+                let hafalanInfo = '-';
+                let targetStatusBadge = '<span class="px-2 py-0.5 rounded-full text-[11px] font-bold bg-slate-100 text-slate-600">-</span>';
+
+                if (kelas.hafalanType === 'JUZ_AMMA') {
+                    const totalHafal = s.hafalan.length;
+                    const targetId = kelas.targetHafalan || 114;
+                    const isReached = s.hafalan.includes(targetId);
+                    hafalanInfo = `${totalHafal} / 37 Surah`;
+                    targetStatusBadge = isReached ? 
+                        '<span class="px-2 py-0.5 rounded-full text-[11px] font-bold bg-emerald-100 text-emerald-800">Tercapai Target</span>' : 
+                        '<span class="px-2 py-0.5 rounded-full text-[11px] font-bold bg-amber-100 text-amber-800">Belum Tercapai</span>';
+                } else if (kelas.hafalanType === 'AQIDATUL_AWAM') {
+                    const totalHafal = s.hafalan.length;
+                    const targetBait = kelas.targetHafalan || 30;
+                    const isReached = totalHafal >= targetBait;
+                    hafalanInfo = `${totalHafal} / 57 Bait`;
+                    targetStatusBadge = isReached ? 
+                        '<span class="px-2 py-0.5 rounded-full text-[11px] font-bold bg-emerald-100 text-emerald-800">Tercapai Target</span>' : 
+                        '<span class="px-2 py-0.5 rounded-full text-[11px] font-bold bg-amber-100 text-amber-800">Belum Tercapai</span>';
+                } else {
+                    hafalanInfo = '<span class="text-slate-400 italic">Tanpa Target</span>';
+                    targetStatusBadge = '<span class="px-2 py-0.5 rounded-full text-[11px] font-bold bg-slate-100 text-slate-500">Non-Target</span>';
+                }
+
+                tr.innerHTML = `
+                    <td class="p-3.5 sm:p-4">
+                        <div class="font-bold text-slate-800">${s.nama}</div>
+                    </td>
+                    <td class="p-3.5 sm:p-4">
+                        <span class="px-2.5 py-1 rounded-full text-[11px] font-semibold bg-emerald-100 text-emerald-800 whitespace-nowrap">${kelas.name}</span>
+                    </td>
+                    <td class="p-3.5 sm:p-4 text-xs">
+                        <div>${ngajiText}</div>
+                        <div class="text-[10px] text-slate-400 mt-0.5">Updated: ${s.ngaji.lastUpdate || '-'}</div>
+                    </td>
+                    <td class="p-3.5 sm:p-4 text-xs font-semibold text-slate-700 whitespace-nowrap">
+                        ${hafalanInfo}
+                    </td>
+                    <td class="p-3.5 sm:p-4 whitespace-nowrap">
+                        ${targetStatusBadge}
+                    </td>
+                    <td class="p-3.5 sm:p-4 text-center space-x-1 whitespace-nowrap">
+                        <button onclick="openModalNgaji('${s.id}')" title="Input Bacaan Ngaji" class="p-2 bg-emerald-100 text-emerald-700 hover:bg-emerald-200 rounded-lg text-xs font-semibold transition">
+                            <i class="fa-solid fa-book-open"></i>
+                        </button>
+                        ${kelas.hafalanType !== 'NONE' ? `
+                        <button onclick="openModalHafalan('${s.id}')" title="Ceklis Hafalan" class="p-2 bg-amber-100 text-amber-700 hover:bg-amber-200 rounded-lg text-xs font-semibold transition">
+                            <i class="fa-solid fa-star"></i>
+                        </button>` : ''}
+                        <button onclick="openModalEditSantri('${s.id}')" title="Edit Santri" class="p-2 bg-slate-100 text-slate-600 hover:bg-slate-200 rounded-lg text-xs font-semibold transition">
+                            <i class="fa-solid fa-pen"></i>
+                        </button>
+                        <button onclick="deleteSantri('${s.id}')" title="Hapus Santri" class="p-2 bg-rose-100 text-rose-600 hover:bg-rose-200 rounded-lg text-xs font-semibold transition">
+                            <i class="fa-solid fa-trash"></i>
+                        </button>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+        };
+
+        function renderKelasSettings() {
+            const container = document.getElementById('kelas-settings-container');
+            if (!container) return;
+            container.innerHTML = '';
+
+            appKelas.forEach(k => {
+                const count = appSantri.filter(s => s.kelasId === k.id).length;
+                const card = document.createElement('div');
+                card.className = "bg-slate-50 p-4 sm:p-5 rounded-2xl border border-slate-200 space-y-3 relative";
+
+                let targetDesc = "Tanpa Target Hafalan";
+                if (k.hafalanType === 'JUZ_AMMA') {
+                    const surahObj = JUZ_AMMA_LIST.find(s => s.id === (k.targetHafalan || 114)) || { name: 'An-Nas' };
+                    targetDesc = `Target Juz 'Amma s/d ${surahObj.name}`;
+                } else if (k.hafalanType === 'AQIDATUL_AWAM') {
+                    targetDesc = `Target Bait Aqidatul Awam ke-${k.targetHafalan || 30}`;
+                }
+
+                card.innerHTML = `
+                    <div class="flex items-start justify-between">
+                        <div>
+                            <span class="text-[10px] bg-emerald-100 text-emerald-800 px-2 py-0.5 rounded-full font-bold">Kelompok Kelas</span>
+                            <h4 class="font-extrabold text-sm sm:text-base text-slate-800 mt-1">${k.name}</h4>
+                        </div>
+                        <button onclick="openModalEditTargetKelas('${k.id}')" title="Ubah Ketentuan & Target Kelas" class="p-2 bg-amber-100 text-amber-700 hover:bg-amber-200 rounded-xl transition">
+                            <i class="fa-solid fa-pen-to-square"></i>
+                        </button>
+                    </div>
+                    <div class="text-xs text-slate-600 space-y-1">
+                        <div>Jumlah Santri: <strong>${count} Anak</strong></div>
+                        <div>Ketentuan Hafalan: <strong>${targetDesc}</strong></div>
+                    </div>
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        function renderSantriViewDashboard(santri) {
+            document.getElementById('santri-view-nama').textContent = santri.nama;
+            
+            const kelas = appKelas.find(k => k.id === santri.kelasId) || { name: '-', hafalanType: 'JUZ_AMMA', targetHafalan: 114 };
+            document.getElementById('santri-view-kelas').textContent = `Kelompok Kelas: ${kelas.name}`;
+
+            const ngajiBox = document.getElementById('santri-view-ngaji-box');
+            let ngajiContent = '';
+            if (santri.ngaji.type === 'Iqro') {
+                ngajiContent = `
+                    <div class="font-bold text-emerald-800 text-sm">${santri.ngaji.iqroJilid}</div>
+                    <div class="text-slate-700">Posisi: <strong>Halaman ${santri.ngaji.halaman}</strong>, <strong>Baris ${santri.ngaji.baris}</strong></div>
+                    <div class="text-xs text-slate-500 italic">Catatan Guru: "${santri.ngaji.catatan || '-'}"</div>
+                    <div class="text-[11px] text-emerald-600 mt-1">Terakhir Diperbarui: ${santri.ngaji.lastUpdate || '-'}</div>
+                `;
+            } else if (santri.ngaji.type === 'Turutan') {
+                ngajiContent = `
+                    <div class="font-bold text-emerald-800 text-sm">Kitab Turutan</div>
+                    <div class="text-slate-700">Posisi: <strong>Halaman ${santri.ngaji.halaman}</strong>, <strong>Baris ${santri.ngaji.baris}</strong></div>
+                    <div class="text-xs text-slate-500 italic">Catatan Guru: "${santri.ngaji.catatan || '-'}"</div>
+                    <div class="text-[11px] text-emerald-600 mt-1">Terakhir Diperbarui: ${santri.ngaji.lastUpdate || '-'}</div>
+                `;
+            } else if (santri.ngaji.type === "Al-Qur'an") {
+                ngajiContent = `
+                    <div class="font-bold text-emerald-800 text-sm">Al-Qur'anul Karim</div>
+                    <div class="text-slate-700">Posisi: <strong>Surah ${santri.ngaji.surahName}</strong>, <strong>Ayat ${santri.ngaji.ayat}</strong></div>
+                    <div class="text-xs text-slate-500 italic">Catatan Guru: "${santri.ngaji.catatan || '-'}"</div>
+                    <div class="text-[11px] text-emerald-600 mt-1">Terakhir Diperbarui: ${santri.ngaji.lastUpdate || '-'}</div>
+                `;
+            }
+            ngajiBox.innerHTML = ngajiContent;
+
+            const hafalanBox = document.getElementById('santri-view-hafalan-box');
+            if (kelas.hafalanType === 'NONE') {
+                hafalanBox.innerHTML = '<div class="text-xs text-slate-500 italic">Kelompok kelas ini tidak memiliki kewajiban target setoran hafalan.</div>';
+            } else if (kelas.hafalanType === 'JUZ_AMMA') {
+                const totalHafal = santri.hafalan.length;
+                const targetSurahId = kelas.targetHafalan || 114;
+                const targetSurahObj = JUZ_AMMA_LIST.find(s => s.id === targetSurahId) || { name: 'An-Nas' };
+                const isReached = santri.hafalan.includes(targetSurahId);
+                const sisaSurah = Math.max(0, 37 - totalHafal);
+
+                hafalanBox.innerHTML = `
+                    <div class="flex items-center justify-between">
+                        <span class="font-bold text-slate-800">Status Pencapaian Hafalan:</span>
+                        <span class="px-3 py-1 rounded-full text-xs font-bold ${isReached ? 'bg-emerald-100 text-emerald-800 border border-emerald-300' : 'bg-amber-100 text-amber-800 border border-amber-300'}">
+                            ${isReached ? 'Tercapai Target' : 'Belum Tercapai'}
+                        </span>
+                    </div>
+                    <div class="text-xs text-slate-700">
+                        Total Surah Dihafal: <strong>${totalHafal} dari 37 Surah Juz 'Amma</strong>
+                    </div>
+                    <div class="text-xs text-slate-700">
+                        Target Minimal Kelas: <strong>Surah ${targetSurahObj.name}</strong>
+                    </div>
+                    <div class="text-xs text-amber-900 font-semibold pt-1">
+                        ${isReached ? ' Alhamdulillah, santri telah mencapai atau melampaui target hafalan kelas.' : ` Kurang ${sisaSurah} surah lagi untuk melengkapi Juz 'Amma dan mencapai target kelas.`}
+                    </div>
+                `;
+            } else if (kelas.hafalanType === 'AQIDATUL_AWAM') {
+                const totalHafal = santri.hafalan.length;
+                const targetBait = kelas.targetHafalan || 30;
+                const isReached = totalHafal >= targetBait;
+                const sisaBait = Math.max(0, targetBait - totalHafal);
+
+                hafalanBox.innerHTML = `
+                    <div class="flex items-center justify-between">
+                        <span class="font-bold text-slate-800">Status Pencapaian Hafalan:</span>
+                        <span class="px-3 py-1 rounded-full text-xs font-bold ${isReached ? 'bg-emerald-100 text-emerald-800 border border-emerald-300' : 'bg-amber-100 text-amber-800 border border-amber-300'}">
+                            ${isReached ? 'Tercapai Target' : 'Belum Tercapai'}
+                        </span>
+                    </div>
+                    <div class="text-xs text-slate-700">
+                        Total Bait Dihafal: <strong>${totalHafal} dari 57 Bait Aqidatul Awam</strong>
+                    </div>
+                    <div class="text-xs text-slate-700">
+                        Target Minimal Kelas: <strong>Bait Ke-${targetBait}</strong>
+                    </div>
+                    <div class="text-xs text-amber-900 font-semibold pt-1">
+                        ${isReached ? ' Alhamdulillah, santri telah mencapai target bait Aqidatul Awam.' : ` Kurang ${sisaBait} bait lagi untuk mencapai target kelas.`}
+                    </div>
+                `;
+            }
+        }
+
+        window.closeModal = function(modalId) {
+            document.getElementById(modalId).classList.add('hidden');
+        };
+
+        window.openModalNgaji = function(santriId) {
+            const santri = appSantri.find(s => s.id === santriId);
+            if (!santri) return;
+
+            document.getElementById('ngaji-santri-id').value = santri.id;
+            document.getElementById('ngaji-type').value = santri.ngaji.type || 'Iqro';
+            document.getElementById('ngaji-iqro-jilid').value = santri.ngaji.iqroJilid || 'Iqro 1';
+            document.getElementById('ngaji-halaman').value = santri.ngaji.halaman || 1;
+            document.getElementById('ngaji-baris').value = santri.ngaji.baris || 1;
+            document.getElementById('ngaji-surah').value = santri.ngaji.surahName || 'Al-Fatihah';
+            document.getElementById('ngaji-ayat').value = santri.ngaji.ayat || 1;
+            document.getElementById('ngaji-catatan').value = santri.ngaji.catatan || '';
+
+            onNgajiTypeChange();
+            document.getElementById('modal-ngaji').classList.remove('hidden');
+        };
+
+        window.onNgajiTypeChange = function() {
+            const type = document.getElementById('ngaji-type').value;
+            const groupIqro = document.getElementById('ngaji-group-iqro');
+            const groupHalBaris = document.getElementById('ngaji-group-hal-baris');
+            const groupQuran = document.getElementById('ngaji-group-quran');
+
+            if (type === 'Iqro') {
+                groupIqro.classList.remove('hidden');
+                groupHalBaris.classList.remove('hidden');
+                groupQuran.classList.add('hidden');
+            } else if (type === 'Turutan') {
+                groupIqro.classList.add('hidden');
+                groupHalBaris.classList.remove('hidden');
+                groupQuran.classList.add('hidden');
+            } else if (type === "Al-Qur'an") {
+                groupIqro.classList.add('hidden');
+                groupHalBaris.classList.add('hidden');
+                groupQuran.classList.remove('hidden');
+            }
+        };
+
+        window.saveBatasNgaji = async function(e) {
+            e.preventDefault();
+            const id = document.getElementById('ngaji-santri-id').value;
+            const santri = appSantri.find(s => s.id === id);
+            if (!santri) return;
+
+            const type = document.getElementById('ngaji-type').value;
+            santri.ngaji.type = type;
+            santri.ngaji.iqroJilid = document.getElementById('ngaji-iqro-jilid').value;
+            santri.ngaji.halaman = parseInt(document.getElementById('ngaji-halaman').value) || 1;
+            santri.ngaji.baris = parseInt(document.getElementById('ngaji-baris').value) || 1;
+            santri.ngaji.surahName = document.getElementById('ngaji-surah').value;
+            santri.ngaji.ayat = parseInt(document.getElementById('ngaji-ayat').value) || 1;
+            santri.ngaji.catatan = document.getElementById('ngaji-catatan').value;
+            santri.ngaji.lastUpdate = new Date().toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' });
+
+            // Simpan langsung ke cloud agar Wali di HP lain langsung menerima perubahan secara instan
+            await saveToCloud();
+            closeModal('modal-ngaji');
+            renderSantriTable();
+        };
+
+        window.openModalHafalan = function(santriId) {
+            const santri = appSantri.find(s => s.id === santriId);
+            if (!santri) return;
+
+            const kelas = appKelas.find(k => k.id === santri.kelasId);
+            const container = document.getElementById('hafalan-checklist-container');
+            container.innerHTML = '';
+
+            document.getElementById('hafalan-modal-title').textContent = `Setoran Hafalan: ${santri.nama}`;
+
+            if (kelas.hafalanType === 'JUZ_AMMA') {
+                document.getElementById('hafalan-modal-subtitle').textContent = "Centang Surah Juz 'Amma (An-Naba' s/d An-Nas) yang sudah dihafal";
+                JUZ_AMMA_LIST.forEach(surah => {
+                    const isChecked = santri.hafalan.includes(surah.id);
+                    const div = document.createElement('label');
+                    div.className = "flex items-center space-x-3 p-2.5 hover:bg-slate-50 rounded-xl cursor-pointer border border-slate-100";
+                    div.innerHTML = `
+                        <input type="checkbox" value="${surah.id}" ${isChecked ? 'checked' : ''} onchange="toggleHafalanSurah('${santri.id}', ${surah.id})" class="w-4 h-4 text-emerald-600 rounded">
+                        <span class="font-bold text-slate-800">${surah.id}. Surah ${surah.name}</span>
+                    `;
+                    container.appendChild(div);
+                });
+            } else if (kelas.hafalanType === 'AQIDATUL_AWAM') {
+                document.getElementById('hafalan-modal-subtitle').textContent = "Centang Bait Kitab Aqidatul Awam (Bait 1 s/d 57) yang sudah dihafal";
+                for (let i = 1; i <= 57; i++) {
+                    const isChecked = santri.hafalan.includes(i);
+                    const div = document.createElement('label');
+                    div.className = "flex items-center space-x-3 p-2.5 hover:bg-slate-50 rounded-xl cursor-pointer border border-slate-100";
+                    div.innerHTML = `
+                        <input type="checkbox" value="${i}" ${isChecked ? 'checked' : ''} onchange="toggleHafalanSurah('${santri.id}', ${i})" class="w-4 h-4 text-emerald-600 rounded">
+                        <span class="font-bold text-slate-800">Bait Nadhom Ke-${i}</span>
+                    `;
+                    container.appendChild(div);
+                }
+            }
+
+            document.getElementById('modal-hafalan').classList.remove('hidden');
+        };
+
+        window.toggleHafalanSurah = async function(santriId, itemId) {
+            const santri = appSantri.find(s => s.id === santriId);
+            if (!santri) return;
+
+            const idx = santri.hafalan.indexOf(itemId);
+            if (idx > -1) {
+                santri.hafalan.splice(idx, 1);
+            } else {
+                santri.hafalan.push(itemId);
+            }
+
+            // Simpan langsung ke cloud
+            await saveToCloud();
+            renderSantriTable();
+        };
+
+        window.openModalAddSantri = function() {
+            document.getElementById('santri-modal-title').textContent = "Tambah Santri Baru";
+            document.getElementById('form-santri-edit-id').value = "";
+            document.getElementById('form-santri-nama').value = "";
+            document.getElementById('form-santri-password').value = "";
+            document.getElementById('modal-santri-form').classList.remove('hidden');
+        };
+
+        window.openModalEditSantri = function(santriId) {
+            const santri = appSantri.find(s => s.id === santriId);
+            if (!santri) return;
+
+            document.getElementById('santri-modal-title').textContent = "Edit Data Santri";
+            document.getElementById('form-santri-edit-id').value = santri.id;
+            document.getElementById('form-santri-nama').value = santri.nama;
+            document.getElementById('form-santri-kelas').value = santri.kelasId;
+            document.getElementById('form-santri-kurikulum').value = santri.ngaji.type || 'Iqro';
+            document.getElementById('form-santri-password').value = santri.password;
+            document.getElementById('modal-santri-form').classList.remove('hidden');
+        };
+
+        window.saveSantriData = async function(e) {
+            e.preventDefault();
+            const editId = document.getElementById('form-santri-edit-id').value;
+            const nama = document.getElementById('form-santri-nama').value.trim();
+            const kelasId = document.getElementById('form-santri-kelas').value;
+            const kurikulum = document.getElementById('form-santri-kurikulum').value;
+            const password = document.getElementById('form-santri-password').value.trim();
+
+            if (editId) {
+                const santri = appSantri.find(s => s.id === editId);
+                if (santri) {
+                    santri.nama = nama;
+                    santri.kelasId = kelasId;
+                    santri.ngaji.type = kurikulum;
+                    santri.password = password;
+                }
+            } else {
+                const newId = 's_' + Date.now();
+                appSantri.push({
+                    id: newId,
+                    nama: nama,
+                    kelasId: kelasId,
+                    password: password,
+                    ngaji: { type: kurikulum, iqroJilid: 'Iqro 1', halaman: 1, baris: 1, surahName: 'Al-Fatihah', ayat: 1, catatan: '-', lastUpdate: '-' },
+                    hafalan: []
+                });
+            }
+
+            await saveToCloud();
+            closeModal('modal-santri-form');
+            renderSantriTable();
+        };
+
+        window.deleteSantri = async function(santriId) {
+            if (confirm("Apakah Anda yakin ingin menghapus data santri ini?")) {
+                appSantri = appSantri.filter(s => s.id !== santriId);
+                await saveToCloud();
+                renderSantriTable();
+            }
+        };
+
+        window.openModalEditTargetKelas = function(kelasId) {
+            const k = appKelas.find(x => x.id === kelasId);
+            if (!k) return;
+
+            document.getElementById('target-kelas-id').value = k.id;
+            document.getElementById('target-kelas-name').value = k.name;
+            document.getElementById('target-kelas-hafalan-type').value = k.hafalanType;
+            
+            onTargetTypeChange();
+            if (k.hafalanType === 'JUZ_AMMA') {
+                document.getElementById('target-kelas-value').value = k.targetHafalan || 114;
+            } else if (k.hafalanType === 'AQIDATUL_AWAM') {
+                document.getElementById('target-kelas-value').value = k.targetHafalan || 30;
+            }
+
+            document.getElementById('modal-edit-target-kelas').classList.remove('hidden');
+        };
+
+        window.onTargetTypeChange = function() {
+            const type = document.getElementById('target-kelas-hafalan-type').value;
+            const container = document.getElementById('target-value-container');
+            const label = document.getElementById('target-label-text');
+            const select = document.getElementById('target-kelas-value');
+
+            if (type === 'NONE') {
+                container.classList.add('hidden');
+                return;
+            }
+
+            container.classList.remove('hidden');
+            select.innerHTML = '';
+
+            if (type === 'JUZ_AMMA') {
+                label.textContent = "Target Minimal Surah Juz 'Amma";
+                JUZ_AMMA_LIST.forEach(s => {
+                    const opt = document.createElement('option');
+                    opt.value = s.id;
+                    opt.textContent = `Surah ${s.name} (${s.id})`;
+                    select.appendChild(opt);
+                });
+            } else if (type === 'AQIDATUL_AWAM') {
+                label.textContent = "Target Minimal Bait Aqidatul Awam";
+                for (let i = 1; i <= 57; i++) {
+                    const opt = document.createElement('option');
+                    opt.value = i;
+                    opt.textContent = `Bait Ke-${i}`;
+                    select.appendChild(opt);
+                }
+            }
+        };
+
+        window.saveTargetKelas = async function(e) {
+            e.preventDefault();
+            const id = document.getElementById('target-kelas-id').value;
+            const k = appKelas.find(x => x.id === id);
+            if (!k) return;
+
+            k.name = document.getElementById('target-kelas-name').value.trim();
+            k.hafalanType = document.getElementById('target-kelas-hafalan-type').value;
+            if (k.hafalanType !== 'NONE') {
+                k.targetHafalan = parseInt(document.getElementById('target-kelas-value').value) || 0;
+            } else {
+                k.targetHafalan = 0;
+            }
+
+            await saveToCloud();
+            closeModal('modal-edit-target-kelas');
+            renderKelasSettings();
+            populateKelasDropdowns();
+        };
+
+        window.saveGuruPassword = async function(e) {
+            e.preventDefault();
+            const newPass = document.getElementById('setting-guru-password').value.trim();
+            if (newPass) {
+                appConfig.guruPassword = newPass;
+                await saveToCloud();
+                alert('Password Mudarris berhasil diubah!');
+                document.getElementById('setting-guru-password').value = "";
+            }
+        };
+    </script>
+</body>
+</html>
